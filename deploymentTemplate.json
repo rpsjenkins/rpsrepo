@@ -88,7 +88,7 @@
   },
   "resources": [
     {
-      "name": "[concat (parameters('sqlserverName'), resourceGroup().name)]",
+      "name": "[concat (parameters('sqlserverName'),'_', resourceGroup().name)]",
       "type": "Microsoft.Sql/servers",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -101,7 +101,7 @@
       },
       "resources": [
         {
-          "name": "[concat(parameters('databaseName'),resourceGroup().name)]",
+          "name": "[concat(parameters('databaseName'),'_',resourceGroup().name)]",
           "type": "databases",
           "location": "[resourceGroup().location]",
           "tags": {
@@ -109,7 +109,7 @@
           },
           "apiVersion": "2014-04-01-preview",
           "dependsOn": [
-            "[resourceId('Microsoft.Sql/servers/', concat(parameters('sqlserverName'),resourceGroup().name))]"
+            "[resourceId('Microsoft.Sql/servers/', concat(parameters('sqlserverName'),'_',resourceGroup().name))]"
           ],
           "properties": {
             "edition": "[parameters('edition')]",
@@ -122,7 +122,7 @@
           "type": "firewallrules",
           "apiVersion": "2014-04-01-preview",
           "dependsOn": [
-            "[resourceId('Microsoft.Sql/servers/', concat(parameters('sqlserverName'),resourceGroup().name))]"
+            "[resourceId('Microsoft.Sql/servers/', concat(parameters('sqlserverName'),'_',resourceGroup().name))]"
           ],
           "location": "[resourceGroup().location]",
           "name": "AllowAllWindowsAzureIps",
@@ -135,7 +135,7 @@
     },
     {
       "apiVersion": "2015-08-01",
-      "name": "[concat(parameters('hostingPlanName'),resourceGroup().name)]",
+      "name": "[concat(parameters('hostingPlanName'),'_',resourceGroup().name)]",
       "type": "Microsoft.Web/serverfarms",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -146,24 +146,24 @@
         "capacity": "[parameters('skuCapacity')]"
       },
       "properties": {
-        "name": "[concat(parameters('hostingPlanName'),resourceGroup().name)]"
+        "name": "[concat(parameters('hostingPlanName'),'_',resourceGroup().name)]"
       }
     },
     {
       "apiVersion": "2015-08-01",
-      "name": "[concat(parameters('webSiteName'),resourceGroup().name)]",
+      "name": "[concat(parameters('webSiteName'),'_',resourceGroup().name)]",
       "type": "Microsoft.Web/sites",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Web/serverFarms/', concat(parameters('hostingPlanName'),resourceGroup().name))]"
+        "[resourceId('Microsoft.Web/serverFarms/', concat(parameters('hostingPlanName'),'_',resourceGroup().name))]"
       ],
       "tags": {
         "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty",
         "displayName": "Website"
       },
       "properties": {
-        "name": "[concat(parameters('webSiteName'),resourceGroup().name)]",
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'),resourceGroup().name))]"
+        "name": "[concat(parameters('webSiteName'),'_',resourceGroup().name)]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat(parameters('hostingPlanName'),'_',resourceGroup().name))]"
       },
       "resources": [
         {
@@ -171,11 +171,11 @@
           "type": "config",
           "name": "connectionstrings",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/Sites/', concat(parameters('webSiteName'),resourceGroup().name))]"
+            "[resourceId('Microsoft.Web/Sites/', concat(parameters('webSiteName'),'_',resourceGroup().name))]"
           ],
           "properties": {
             "WebAppContext": {
-              "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', concat(parameters('sqlserverName'),resourceGroup().name))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('administratorLogin'), '@', parameters('sqlserverName'), ';Password=', parameters('administratorLoginPassword'), ';')]",
+              "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', concat(parameters('sqlserverName'),'_',resourceGroup().name))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('administratorLogin'), '@', parameters('sqlserverName'), ';Password=', parameters('administratorLoginPassword'), ';')]",
               "type": "SQLAzure"
             }
           }
